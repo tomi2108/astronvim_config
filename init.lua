@@ -60,6 +60,37 @@ return {
       },
     },
   },
+  plugins = {
+    {
+      -- override nvim-cmp plugin
+      "hrsh7th/nvim-cmp",
+      -- override the options table that is used in the `require("cmp").setup()` call
+      opts = function(_, opts)
+        -- opts parameter is the default options table
+        -- the function is lazy loaded so cmp is able to be required
+        local cmp = require "cmp"
+        -- modify the mapping part of the table
+        cmp.setup {
+
+
+          sources = cmp.config.sources({
+            -- Dont suggest Text from nvm_lsp
+            {
+              name = "nvim_lsp",
+              entry_filter = function(entry, ctx)
+                local kind = types.lsp.CompletionItemKind[entry:get_kind()]
+
+                if kind == "Text" then return false end
+                return true
+              end
+            },
+          })
+        }
+        -- return the new table to be used
+        return opts
+      end,
+    },
+  },
   -- This function is run last and is a good place to configuring
   -- augroups/autocommands and custom filetypes also this just pure lua so
   -- anything that doesn't fit in the normal config locations above can go here
